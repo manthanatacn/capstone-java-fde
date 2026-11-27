@@ -62,13 +62,16 @@ You don't need to type them.
 
 ## 4. Set the environment properties
 
+The database URL, username and password are **not** environment properties: the `prod` profile reads
+them from the Secrets Manager secret named by `SECRET_NAME` (`spring.config.import=aws-secretsmanager:...`).
+The environment's instance profile needs `secretsmanager:GetSecretValue` on that secret.
+
 Configuration → Updates, monitoring and logging → **Environment properties**:
 
 | Name | Value | Required |
 |---|---|---|
-| `DB_URL` | `jdbc:postgresql://<rds-endpoint>:5432/healthdekho` | yes |
-| `DB_USERNAME` | RDS master user | yes |
-| `DB_PASSWORD` | RDS master password | yes |
+| `SECRET_NAME` | `prod/capstone` (already set by `.ebextensions`) | yes |
+| `AWS_REGION` | `ap-south-1` (already set by `.ebextensions`) | yes |
 | `JWT_SECRET` | 32+ random characters (`openssl rand -base64 48`) | yes |
 | `AI_API_KEY` | your provider key | no (rule-based ranking without it) |
 | `AI_BASE_URL`, `AI_MODEL`, `AI_COMPLETIONS_PATH` | see README, AI configuration | no |

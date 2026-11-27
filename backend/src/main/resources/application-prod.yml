@@ -1,8 +1,26 @@
-# Production: no defaults for secrets, no demo data.
+# Production (Elastic Beanstalk). Only SECRET_NAME (and AWS_REGION) need to be set on the environment:
+# the database URL, username and password are read from AWS Secrets Manager at start-up.
+# The instance profile needs secretsmanager:GetSecretValue on that secret.
 spring:
+  config:
+    import: aws-secretsmanager:${SECRET_NAME}
+  cloud:
+    aws:
+      region:
+        static: ${AWS_REGION:ap-south-1}
+      secretsmanager:
+        enabled: true
+  datasource:
+    # Keys as given by the trainer (SPRING_DATASOURCE_*). If the secret is in the standard RDS format
+    # instead (host, port, dbname, username, password), those keys are used.
+    url: ${SPRING_DATASOURCE_URL:${DB_URL:jdbc:postgresql://${host}:${port:5432}/${dbname:instance_db}}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:${username}}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:${password}}}
   sql:
     init:
-      data-locations: optional:classpath:prod-data.sql   # schema only, no demo seed
+      # schema.sql always runs; data.sql (the requirement's sample data) is required for the capstone.
+      # Both are idempotent. Add classpath:demo-data.sql via SPRING_SQL_INIT_DATA_LOCATIONS for extra demo rows.
+      data-locations: classpath:data.sql
 
 logging:
   level:

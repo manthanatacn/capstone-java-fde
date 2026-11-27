@@ -105,7 +105,12 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origins}") List<String> origins) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(origins);
+        // browsers send the origin without a trailing slash, so "http://x.cloudfront.net/" must match too
+        config.setAllowedOrigins(origins.stream()
+                .map(String::trim)
+                .filter(o -> !o.isEmpty())
+                .map(o -> o.endsWith("/") ? o.substring(0, o.length() - 1) : o)
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
