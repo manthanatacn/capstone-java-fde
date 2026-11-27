@@ -17,3 +17,6 @@ frontend/coverage/
 
 # release archive
 project.zip
+
+
+*.patch
