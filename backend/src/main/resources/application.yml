@@ -1,0 +1,70 @@
+# Shared configuration. Anything that differs per environment comes from env vars or a profile file.
+spring:
+  application:
+    name: healthdekho-insurance
+  config:
+    # Optional KEY=VALUE file next to where the app is started (backend/ or the repo root).
+    # Real environment variables (Beanstalk environment properties, shell exports) always win over it.
+    import: optional:file:../.env[.properties],optional:file:.env[.properties]
+  profiles:
+    default: dev
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  sql:
+    init:
+      mode: always            # schema.sql / data.sql are idempotent
+      continue-on-error: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate      # schema is owned by schema.sql, Hibernate only checks it
+    properties:
+      hibernate:
+        jdbc.time_zone: Asia/Kolkata
+  jackson:
+    time-zone: Asia/Kolkata
+    deserialization:
+      accept-float-as-int: false   # 2.7 years is an error, not 2
+  http:
+    client:
+      connect-timeout: 5s
+      read-timeout: 30s       # keeps a slow model from hanging the recommendation request
+  ai:
+    retry:
+      max-attempts: 2
+    model:
+      embedding: none
+      image: none
+      audio:
+        speech: none
+        transcription: none
+      moderation: none
+    openai:
+      # Any OpenAI-compatible endpoint works (OpenAI, Groq, Gemini, Ollama). See README.
+      api-key: ${AI_API_KEY:not-configured}
+      base-url: ${AI_BASE_URL:https://api.openai.com}
+      chat:
+        completions-path: ${AI_COMPLETIONS_PATH:/v1/chat/completions}
+        options:
+          model: ${AI_MODEL:gpt-4o-mini}
+          temperature: 0.2
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+
+app:
+  time-zone: Asia/Kolkata
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      ttl: ${JWT_TTL:2h}
+      issuer: healthdekho
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  ai:
+    prompt-version: rec-v1
+    max-recommendations: 3

@@ -1,0 +1,19 @@
+# build output
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# local env and editor files
+.env
+*.local
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# logs
+*.log
+
+# release archive
+project.zip

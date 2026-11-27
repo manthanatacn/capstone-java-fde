@@ -1,0 +1,9 @@
+# Production: no defaults for secrets, no demo data.
+spring:
+  sql:
+    init:
+      data-locations: optional:classpath:prod-data.sql   # schema only, no demo seed
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,23 @@
+# Local PostgreSQL for development and integration tests only.
+# The application itself does not depend on Docker; point DB_URL at any PostgreSQL 14+.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: healthdekho-db
+    environment:
+      POSTGRES_DB: healthdekho
+      POSTGRES_USER: healthdekho
+      POSTGRES_PASSWORD: healthdekho
+    ports:
+      - "5432:5432"
+    volumes:
+      - healthdekho-data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthdekho -d healthdekho"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  healthdekho-data:

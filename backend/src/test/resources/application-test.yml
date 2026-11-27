@@ -1,0 +1,18 @@
+# Integration tests use a separate database on the same local PostgreSQL (see dev/docker-compose.yml).
+spring:
+  datasource:
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/healthdekho_test}
+    username: ${DB_USERNAME:healthdekho}
+    password: ${DB_PASSWORD:healthdekho}
+  sql:
+    init:
+      data-locations: classpath:data.sql,classpath:demo-data.sql
+  ai:
+    openai:
+      api-key: test-key-not-used
+      base-url: http://localhost:1   # nothing listens here; tests stub the AI client
+
+app:
+  security:
+    jwt:
+      secret: test-secret-for-integration-tests-only-0123456789
